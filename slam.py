@@ -9,7 +9,7 @@ from pandas import DataFrame
 import seaborn as sns
 ## slam takes in 6 arguments and returns mu, 
 ## mu is the entire path traversed by a robot (all x,y poses) *and* all landmarks locations
-def slam(data, N, num_landmarks, world_size, motion_noise, measurement_noise):
+def slam_inv(data, N, num_landmarks, world_size, motion_noise, measurement_noise):
     
     ## TODO: Use your initilization to create constraint matrices, omega and xi
     omega, xi = initialize_constraints(N, num_landmarks, world_size)    
@@ -90,6 +90,91 @@ def slam(data, N, num_landmarks, world_size, motion_noise, measurement_noise):
     mu = omega_inv*xi   
     
     return mu, omega, xi # return `mu`
+
+def slam_pi(data, N, num_landmarks, world_size, motion_noise, measurement_noise):
+        
+        ## TODO: Use your initilization to create constraint matrices, omega and xi
+        omega, xi = initialize_constraints(N, num_landmarks, world_size)    
+        
+        motion_strength = 1.0 / motion_noise
+        measurement_strength = 1.0 / measurement_noise
+        
+        ## TODO: Iterate through each time step in the data
+        ## get all the motion and measurement data as you iterate
+        
+        assert (len(data)+1)==N, "Data Error: The data size doesn't match N!"
+        
+        #for time_step in range(N-1):
+        for time_step in range(N-1):
+            measurements = data[time_step][0]
+            motion = data[time_step][1]              
+                
+        ## TODO: update the constraint matrix/vector to account for all *measurements*
+        ## this should be a series of additions that take into account the measurement noise
+            for measurement in measurements:
+                ldmk_idx = measurement[0]
+                ldmk_dx = measurement[1]
+                ldmk_dy = measurement[2]
+                
+                # the row/column index of x axis of pose and the current measured landmark in 
+                # the omega matrix and xi vector; the y axis will simply be x + 1
+                pose_row_col = (time_step) * 2
+                ldmk_row_col = (N + ldmk_idx) * 2
+                
+                # update x axis
+                omega[pose_row_col][pose_row_col] += measurement_strength
+                omega[ldmk_row_col][ldmk_row_col] += measurement_strength
+                omega[pose_row_col][ldmk_row_col] -= measurement_strength
+                omega[ldmk_row_col][pose_row_col] -= measurement_strength
+                
+                xi[pose_row_col][0] -= measurement_strength * ldmk_dx
+                xi[ldmk_row_col][0] += measurement_strength * ldmk_dx
+                
+                # update y axis
+                omega[pose_row_col+1][pose_row_col+1] += measurement_strength
+                omega[ldmk_row_col+1][ldmk_row_col+1] += measurement_strength
+                omega[pose_row_col+1][ldmk_row_col+1] -= measurement_strength
+                omega[ldmk_row_col+1][pose_row_col+1] -= measurement_strength
+                
+                xi[pose_row_col+1][0] -= measurement_strength * ldmk_dy
+                xi[ldmk_row_col+1][0] += measurement_strength * ldmk_dy
+                
+                
+        ## TODO: update the constraint matrix/vector to account for all *motion* and motion noise
+            pose_pre = (time_step) * 2
+            pose_cur = (time_step + 1) * 2  # this is a repeated definition only for easy to read purpose        
+            
+            pose_dx = motion[0]
+            pose_dy = motion[1]
+            
+            # update x axis
+            omega[pose_pre][pose_pre] += motion_strength
+            omega[pose_cur][pose_cur] += motion_strength
+            omega[pose_pre][pose_cur] -= motion_strength
+            omega[pose_cur][pose_pre] -= motion_strength
+
+            xi[pose_pre][0] -= motion_strength * pose_dx
+            xi[pose_cur][0] += motion_strength * pose_dx
+
+            # update y axis
+            omega[pose_pre+1][pose_pre+1] += motion_strength
+            omega[pose_cur+1][pose_cur+1] += motion_strength
+            omega[pose_pre+1][pose_cur+1] -= motion_strength
+            omega[pose_cur+1][pose_pre+1] -= motion_strength
+
+            xi[pose_pre+1][0] -= motion_strength * pose_dy
+            xi[pose_cur+1][0] += motion_strength * pose_dy
+            
+        
+        ## TODO: After iterating through all the data
+        ## Compute the best estimate of poses and landmark positions
+        ## using the formula, omega_inverse * Xi
+        omega_pinv = np.linalg.pinv(np.matrix(omega))
+        mu = omega_pinv*xi   
+
+        
+        
+        return mu, omega, xi # return `mu`
 
 
 

@@ -88,6 +88,7 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
                 orientation = random.random() * 2.0 * pi
                 dx = cos(orientation) * distance
                 dy = sin(orientation) * distance
+                print(dx,dy)
 
             # collect/memorize all sensor and motion data
             data.append([Z, [dx, dy]])
@@ -95,10 +96,31 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
         # we are done when all landmarks were observed; otherwise re-run
         complete = (sum(seen) == num_landmarks)
 
-    print(' ')
-    print('Landmarks: ', r.landmarks)
-    print(r)
+    #print(' ')
+    #print('Landmarks: ', r.landmarks)
+    #print(r)
 
 
     return data,r
 
+def initialize_constraints(N, num_landmarks, world_size):
+        ''' This function takes in a number of time steps N, number of landmarks, and a world_size,
+            and returns initialized constraint matrices, omega and xi.'''
+        
+        ## Recommended: Define and store the size (rows/cols) of the constraint matrix in a variable
+        size = (N + num_landmarks) * 2
+        
+        # initial position weight
+        weight = 100
+        
+        ## TODO: Define the constraint matrix, Omega, with two initial "strength" values
+        ## for the initial x, y location of our robot
+        omega = np.zeros((size, size))
+        omega[0][0] = omega[1][1] = weight
+        
+        ## TODO: Define the constraint *vector*, xi
+        ## you can assume that the robot starts out in the middle of the world with 100% confidence
+        xi = np.zeros((size, 1))
+        xi[0][0] = xi[1][0] = world_size / 2.0 * weight
+        
+        return omega, xi
