@@ -35,7 +35,7 @@ class slam:
         
        
     
-    def run_slam(self):
+    def run_slam(self,algorithm = "least squares"):
 
         omega = self.omega
         xi = self.xi
@@ -115,32 +115,37 @@ class slam:
         ## TODO: After iterating through all the data
         ## Compute the best estimate of poses and landmark positions
         ## using the formula, omega_inverse * Xi
+        '''
         omega_pinv = np.linalg.pinv(np.matrix(omega))
         mu = omega_pinv*xi   
-
+        '''
+        #mu,extra1,extra2,extra3 = np.linalg.lstsq(omega, xi)
+        #print("mu is ",mu)
         
+        #a = np.delete(omega, np.all(omega==0,axis=1), axis=0)
+        #a = np.delete(a, np.all(a==0,axis=0), axis=1)
+
+        #b = np.delete(xi, np.all(xi==0,axis=1), axis=0)
+        
+        a=omega
+        b=xi
+        print(np.shape(a),np.shape(b))
+        
+
+        if algorithm=="least squares":
+            mu = self.least_squares(a,b)
+        elif algorithm == "pseudo inverse":
+            mu = self.pseudo_inverse(a, b)
+
         
         
         self.omega = omega
         self.xi = xi
         
-        return mu, omega, xi # return `mu`
+        return mu, omega, xi,0#, #int(np.shape(a)[0]/2)-2 # return `mu`
 
 
-
-    def get_poses_landmarks(mu, N,num_landmarks):
-    # create a list of poses
-        poses = []
-        for i in range(N):
-            poses.append((mu[2*i].item(), mu[2*i+1].item()))
-
-        # create a list of landmarks
-        landmarks = []
-        for i in range(num_landmarks):
-            landmarks.append((mu[2*(N+i)].item(), mu[2*(N+i)+1].item()))
-
-        # return completed lists
-        return poses, landmarks
+  
 
     def print_all(poses, landmarks):
         print('\n')
@@ -157,4 +162,11 @@ class slam:
 
     def add_time_step(self,new_data):
         self.data.append(new_data)
-        
+
+    def pseudo_inverse(self,a,b):
+        a_pinv = np.linalg.pinv(np.matrix(a))
+        x = a_pinv*b
+        return x
+    def least_squares(self,a,b):
+        mu,extra1,extra2,extra3 = np.linalg.lstsq(a, b)
+        return mu

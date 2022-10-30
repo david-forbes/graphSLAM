@@ -56,10 +56,9 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
               measurement_noise, distance):
 
 
-    # check if data has been made
-    complete = False
+    
 
-    while not complete:
+    
 
         data = []
 
@@ -72,36 +71,34 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
         orientation = random.random() * 2.0 * pi
         dx = cos(orientation) * distance
         dy = sin(orientation) * distance
+        
     
         for k in range(N-1):
+            
+            
     
-            # collect sensor measurements in a list, Z
-            Z = r.sense()
-
-            # check off all landmarks that were observed 
-            for i in range(len(Z)):
-                seen[Z[i][0]] = True
-    
-            # move
             while not r.move(dx, dy):
                 # if we'd be leaving the robot world, pick instead a new direction
                 orientation = random.random() * 2.0 * pi
                 dx = cos(orientation) * distance
                 dy = sin(orientation) * distance
-                print(dx,dy)
+                dx,dy = (random.random()*2)-1,(random.random()*2)-1
+            dx*=10
+            dy*=10
 
-            # collect/memorize all sensor and motion data
-            data.append([Z, [dx, dy]])
-
-        # we are done when all landmarks were observed; otherwise re-run
-        complete = (sum(seen) == num_landmarks)
-
-    #print(' ')
-    #print('Landmarks: ', r.landmarks)
-    #print(r)
+          
+        
+   
+        data = r.get_data()
 
 
-    return data,r
+
+        return data,r
+
+
+
+
+
 
 def initialize_constraints(N, num_landmarks, world_size):
         ''' This function takes in a number of time steps N, number of landmarks, and a world_size,

@@ -35,6 +35,7 @@ class robot:
         self.motion_noise = motion_noise
         self.measurement_noise = measurement_noise
         self.landmarks = []
+        self.data = []
         self.num_landmarks = 0
     
     
@@ -55,8 +56,19 @@ class robot:
         if x < 0.0 or x > self.world_size or y < 0.0 or y > self.world_size:
             return False
         else:
+            
             self.x = x
             self.y = y
+            print(x,y)
+            self.data.append([self.sense(), [dx, dy]])
+            
+
+
+
+
+
+
+
             return True
 
 
@@ -99,13 +111,13 @@ class robot:
             ldmk_x = ldmk[0]
             ldmk_y = ldmk[1]
             
-            dx = ldmk_x - self.x 
+            dx = ldmk_x - self.x
             dy = ldmk_y - self.y
             
             dx += self.rand() * self.measurement_noise
             dy += self.rand() * self.measurement_noise
             
-            if (dx<=self.measurement_range) and (dy<=self.measurement_range):
+            if (abs(dx)<=self.measurement_range) and (abs(dy)<=self.measurement_range):
                 measurements.append([idx, dx, dy])            
                 
         return measurements
@@ -161,7 +173,9 @@ class robot:
 
         
 
-        self.num_landmarks = num_landmarks
+        self.num_landmarks = num_landmarks_placed
+
+    
         
 
     # called when print(robot) is called; prints the robot's location
@@ -170,6 +184,8 @@ class robot:
 
     def get_landmarks(self):
         return self.landmarks
+    def get_data(self):
+        return self.data
 
 
 

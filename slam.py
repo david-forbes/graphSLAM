@@ -192,6 +192,8 @@ def get_poses_landmarks(mu, N,num_landmarks):
 
     # create a list of landmarks
     landmarks = []
+    print(num_landmarks)
+    print(np.shape(mu),num_landmarks,N)
     for i in range(num_landmarks):
         landmarks.append((mu[2*(N+i)].item(), mu[2*(N+i)+1].item()))
 
