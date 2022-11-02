@@ -119,28 +119,44 @@ class slam:
         omega_pinv = np.linalg.pinv(np.matrix(omega))
         mu = omega_pinv*xi   
         '''
-        #mu,extra1,extra2,extra3 = np.linalg.lstsq(omega, xi)
-        #print("mu is ",mu)
-        
-        #a = np.delete(omega, np.all(omega==0,axis=1), axis=0)
-        #a = np.delete(a, np.all(a==0,axis=0), axis=1)
-
-        #b = np.delete(xi, np.all(xi==0,axis=1), axis=0)
         
         a=omega
         b=xi
-        print(np.shape(a),np.shape(b))
-        
 
+        #keeps track of zero values in vector
+        xi_reduction = np.all(xi==0,axis=1)
+
+        #removes zero rows and columns from matrix and vector
+        a = np.delete(omega, np.all(omega==0,axis=1), axis=0)
+        a = np.delete(a, np.all(a==0,axis=0), axis=1)
+
+        b = np.delete(xi, xi_reduction, axis=0)
+        
+        
+        #initialize array
+        mu = np.array([])
+
+        #get solution vector using chosen method
         if algorithm=="least squares":
-            mu = self.least_squares(a,b)
+            solution_vector = self.least_squares(a,b)
         elif algorithm == "pseudo inverse":
-            mu = self.pseudo_inverse(a, b)
+            solution_vector = self.pseudo_inverse(a, b)
 
         
         
         self.omega = omega
         self.xi = xi
+
+        #expands solution vector to initial size of vector(with zero values)
+        #this avoids noise created when solutions vector is found
+        counter=0
+
+        for x in range(len(xi_reduction)):
+            if xi_reduction[x]==False:
+                mu = np.append(mu,solution_vector[counter])
+                counter+=1
+            else:
+                mu=np.append(mu,0)
         
         return mu, omega, xi,0#, #int(np.shape(a)[0]/2)-2 # return `mu`
 

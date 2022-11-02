@@ -46,7 +46,16 @@ def display_world(world_size, position, landmarks=None):
     # Display final result
     plt.show()
 
+
     
+    # using seaborn, set background grid to gray
+    
+
+    # Plot grid of values
+    
+    
+    # Display final result
+       
 # --------
 # this routine makes the robot data
 # the data is a list of measurements and movements: [measurements, [dx, dy]]
@@ -66,25 +75,25 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
         r = robot(world_size, measurement_range, motion_noise, measurement_noise)
         r.make_landmarks(num_landmarks)
         seen = [False for row in range(num_landmarks)]
-    
+        '''
         # guess an initial motion
         orientation = random.random() * 2.0 * pi
         dx = cos(orientation) * distance
         dy = sin(orientation) * distance
         
-    
+        '''
         for k in range(N-1):
+            r.make_time_step()
             
             
-    
+            '''
             while not r.move(dx, dy):
                 # if we'd be leaving the robot world, pick instead a new direction
                 orientation = random.random() * 2.0 * pi
                 dx = cos(orientation) * distance
                 dy = sin(orientation) * distance
                 dx,dy = (random.random()*2)-1,(random.random()*2)-1
-            dx*=10
-            dy*=10
+            '''
 
           
         
@@ -95,7 +104,21 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
 
         return data,r
 
+def initialize_robot(N, num_landmarks, world_size, measurement_range, motion_noise, 
+              measurement_noise, distance):
 
+    data = []
+
+    # make robot and landmarks
+    r = robot(world_size, measurement_range, motion_noise, measurement_noise)
+    r.make_landmarks(num_landmarks)
+ 
+
+    
+
+
+
+    return data,r
 
 
 

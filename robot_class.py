@@ -31,7 +31,9 @@ class robot:
         self.world_size = world_size
         self.measurement_range = measurement_range
         self.x = world_size / 2.0
-        self.y = world_size / 2.0
+        self.y = (world_size / 2.0)#-self.world_size*0.4*0.5*0.85
+        #self.x = world_size/2
+        #self.y = world_size/2
         self.motion_noise = motion_noise
         self.measurement_noise = measurement_noise
         self.landmarks = []
@@ -137,7 +139,7 @@ class robot:
             self.landmarks.append([round(random.random() * self.world_size),
                                    round(random.random() * self.world_size)])
         '''
-        circle_radius = self.world_size*0.7*0.5
+        circle_radius = self.world_size*0.4*0.5
 
 
         for x in range(round(self.world_size)):
@@ -175,9 +177,22 @@ class robot:
 
         self.num_landmarks = num_landmarks_placed
 
-    
-        
-
+    def make_time_step(self):
+        dx,dy = 10*((random.random()*2)-1),10*((random.random()*2)-1)
+        while not self.move(dx, dy):
+                # if we'd be leaving the robot world, pick instead a new direction
+                
+                dx,dy = 10*((random.random()*2)-1),10*((random.random()*2)-1)
+        return self.data
+    def make_time_step_circle(self):
+        dx = 1
+        dy = circle_dy(dx, self.world_size/2)
+        while not self.move(dx, dy):
+                # if we'd be leaving the robot world, pick instead a new direction
+                
+                dx = 1
+                dy = circle_dy(dx, self.world_size/2)
+        return self.data
     # called when print(robot) is called; prints the robot's location
     def __repr__(self):
         return 'Robot: [x=%.5f y=%.5f]'  % (self.x, self.y)
