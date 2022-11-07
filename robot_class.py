@@ -178,11 +178,11 @@ class robot:
         self.num_landmarks = num_landmarks_placed
 
     def make_time_step(self):
-        dx,dy = 10*((random.random()*2)-1),10*((random.random()*2)-1)
+        dx,dy = 3*((random.random()*2)-1),10*((random.random()*2)-1)
         while not self.move(dx, dy):
                 # if we'd be leaving the robot world, pick instead a new direction
                 
-                dx,dy = 10*((random.random()*2)-1),10*((random.random()*2)-1)
+                dx,dy = 3*((random.random()*2)-1),10*((random.random()*2)-1)
         return self.data
     def make_time_step_circle(self):
         dx = 1

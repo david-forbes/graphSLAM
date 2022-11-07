@@ -11,7 +11,7 @@ from slam_class import *
 from matplotlib.animation import FuncAnimation
 # Display the final world!
 
-world_size         = 200.0    # size of world (square)
+world_size         = 100.0    # size of world (square)
 num_landmarks = 2*round(world_size*0.7 + world_size*0.7*0.7)   # number of landmarks
 N                  =  100   # time steps
 

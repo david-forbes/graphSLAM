@@ -86,14 +86,7 @@ def make_data(N, num_landmarks, world_size, measurement_range, motion_noise,
             r.make_time_step()
             
             
-            '''
-            while not r.move(dx, dy):
-                # if we'd be leaving the robot world, pick instead a new direction
-                orientation = random.random() * 2.0 * pi
-                dx = cos(orientation) * distance
-                dy = sin(orientation) * distance
-                dx,dy = (random.random()*2)-1,(random.random()*2)-1
-            '''
+            
 
           
         
